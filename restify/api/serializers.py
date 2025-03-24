@@ -5,11 +5,13 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
+            'id',
             'name',
             'description',
             'price',
             'stock'
         )
+        # fields = "__all__"
 
     def validate_price(self, value):
         if value <= 0:
