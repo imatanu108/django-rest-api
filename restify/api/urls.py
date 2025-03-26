@@ -6,6 +6,7 @@ urlpatterns = [
     path('products/', views.product_list),
     path('products/all/', views.ProductListAPIView.as_view()), # Using Generic View
     path('products/info/', views.product_info),
+    path('products/all/info/', views.ProductInfoAPIView.as_view()), # using class base APIView
     path('products/<int:pk>/', views.product_detail),
     path('products/all/<int:pk>/', views.ProductDetailAPIView.as_view()), # Using Generic View
     path('orders/', views.order_list),
