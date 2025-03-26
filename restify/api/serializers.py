@@ -19,7 +19,7 @@ class ProductSerializer(serializers.ModelSerializer):
         return value
 
 
-class OrderItemSerializer(serializers.ModelSerializer):\
+class OrderItemSerializer(serializers.ModelSerializer):
     # Nested serializer to include full product details (use only when needed)
     product = ProductSerializer()
 

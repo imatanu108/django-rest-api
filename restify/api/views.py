@@ -4,8 +4,9 @@ from .serializers import ProductInfoSerializer, ProductSerializer, OrderSerializ
 from .models import Product, Order, OrderItem
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404 
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(['GET'])
@@ -48,16 +49,16 @@ class OrderListAPIView(generics.ListAPIView):
 class UserOrderListAPIView(generics.ListAPIView):
     queryset = Order.objects.prefetch_related('items__product')
     serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
         qs = super().get_queryset()
         return qs.filter(user=user)
 
-
 @api_view(['GET'])
 def product_info(request):
-    products = Product.objects.all()
+    products = Product.objects.all(0)
     serializer = ProductInfoSerializer({
         'products': products,
         'count': len(products),
