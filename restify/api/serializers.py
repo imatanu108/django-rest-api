@@ -1,11 +1,32 @@
 from rest_framework import serializers
 from .models import Product, Order, OrderItem
 
+
+# serializer to get product details
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
             'id',
+            'name',
+            'price',
+            'stock'
+        )
+
+    def validate_price(self, value):
+        if value <= 0:
+            raise serializers.ValidationError(
+                "Price must be greater than 0."
+            )
+        return value
+    
+
+# serializer to create add a product
+class ProductCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = (
+            'description',
             'name',
             'price',
             'stock'

@@ -3,6 +3,7 @@ from django.db.models import Max
 from .serializers import (
     ProductInfoSerializer,
     ProductSerializer,
+    ProductCreateSerializer,
     OrderSerializer,
     OrderItemSerializer,
 )
@@ -27,6 +28,11 @@ class ProductListAPIView(generics.ListAPIView):
     queryset = Product.objects.filter(stock__gt=0)
     serializer_class = ProductSerializer
 
+# adding a new product
+class ProductCreateAPIView(generics.CreateAPIView):
+    model = Product
+    serializer_class = ProductCreateSerializer
+
 
 @api_view(["GET"])
 def product_detail(request, pk):
@@ -39,6 +45,7 @@ def product_detail(request, pk):
 class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    lookup_url_kwarg = 'product_id'
 
 
 @api_view(["GET"])
