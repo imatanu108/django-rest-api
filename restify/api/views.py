@@ -11,7 +11,7 @@ from .models import Product, Order, OrderItem
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
-from rest_framework import generics
+from rest_framework import generics, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
@@ -28,11 +28,25 @@ class ProductListAPIView(generics.ListAPIView):
     queryset = Product.objects.filter(stock__gt=0)
     serializer_class = ProductSerializer
 
+
+# Using Mixins with Generic Views to do the same task
+class ProductListMixinAPIView(mixins.ListModelMixin, generics.GenericAPIView):
+    queryset = Product.objects.filter(stock__gt=0)
+    serializer_class = ProductSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
 # adding a new product
 class ProductCreateAPIView(generics.CreateAPIView):
     model = Product
     serializer_class = ProductCreateSerializer
 
+    # docs: https://www.cdrf.co/
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        return super().create(request,  *args, **kwargs)
 
 @api_view(["GET"])
 def product_detail(request, pk):

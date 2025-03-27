@@ -6,6 +6,7 @@ urlpatterns = [
     path('products/', views.product_list),
     path('products/create/', views.ProductCreateAPIView.as_view()),
     path('products/all/', views.ProductListAPIView.as_view()), # Using Generic View
+    path('products/mixins/', views.ProductListMixinAPIView.as_view()), # Using Generic View with Mixins
     path('products/info/', views.product_info),
     path('products/all/info/', views.ProductInfoAPIView.as_view()), # using class base APIView
     path('products/<int:pk>/', views.product_detail),
