@@ -1,0 +1,12 @@
+GET http://localhost:8000/api/products/list-create/ HTTP/1.1
+
+###
+POST http://localhost:8000/api/products/list-create/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Galaxy S24 Ultra",
+    "price": "1100.05",
+    "stock": 10,
+    "description": "Its Galaxy S24 Ultra."
+}
