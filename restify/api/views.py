@@ -67,10 +67,23 @@ def product_detail(request, pk):
 
 
 # Generic view for the same task
-class ProductDetailAPIView(generics.RetrieveAPIView):
+# class ProductDetailAPIView(generics.RetrieveAPIView):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+#     lookup_url_kwarg = 'product_id'
+
+
+# Single Generic view for the retriving, updating and deleting
+class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_url_kwarg = 'product_id'
+
+    def get_permissions(self):
+        self.permission_classes = [AllowAny]
+        if self.request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions()
 
 
 @api_view(["GET"])
