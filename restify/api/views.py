@@ -48,10 +48,26 @@ class ProductCreateAPIView(generics.CreateAPIView):
         return super().create(request,  *args, **kwargs)
     
 
+from .filters import ProductFilter, InStockFilterBackend
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+
+
 # Generic view for the Listing and creating products (with custom permission)
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    # filterset_fields = ('name', 'price')
+    filterset_class = ProductFilter
+    filter_backends = [
+        DjangoFilterBackend, 
+        filters.SearchFilter,
+        filters.OrderingFilter,
+        InStockFilterBackend
+    ]
+    search_fields = ['=name', 'description'],
+    # =name, here name must be exact to get matched but not for the description, to do the same with name we must use only 'name' instead of =name
+    ordering_fields = ['name', 'price', 'stock']
 
     def get_permissions(self):
         self.permission_classes = [AllowAny]

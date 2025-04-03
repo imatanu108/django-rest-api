@@ -10,7 +10,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'price',
-            'stock'
+            'stock',
+            'description'
         )
 
     def validate_price(self, value):
