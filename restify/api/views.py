@@ -14,6 +14,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, mixins
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.views import APIView
+from .filters import ProductFilter, InStockFilterBackend
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 
 
 @api_view(["GET"])
@@ -48,11 +52,6 @@ class ProductCreateAPIView(generics.CreateAPIView):
         return super().create(request,  *args, **kwargs)
     
 
-from .filters import ProductFilter, InStockFilterBackend
-from rest_framework import filters
-from django_filters.rest_framework import DjangoFilterBackend
-
-
 # Generic view for the Listing and creating products (with custom permission)
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
@@ -68,6 +67,12 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     search_fields = ['=name', 'description'],
     # =name, here name must be exact to get matched but not for the description, to do the same with name we must use only 'name' instead of =name
     ordering_fields = ['name', 'price', 'stock']
+    # pagination_class = LimitOffsetPagination
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 4 #setting page size for a particular view
+    pagination_class.page_size_query_param = 'size'
+    pagination_class.max_page_size = 10 # limiting max page size
+
 
     def get_permissions(self):
         self.permission_classes = [AllowAny]
