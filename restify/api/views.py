@@ -9,16 +9,15 @@ from .serializers import (
 )
 from .models import Product, Order, OrderItem
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, mixins
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.views import APIView
-from .filters import ProductFilter, InStockFilterBackend
-from rest_framework import filters
+from .filters import ProductFilter, InStockFilterBackend, OrderFilter
+from rest_framework import filters, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
-
 
 @api_view(["GET"])
 def product_list(request):
@@ -155,4 +154,31 @@ class ProductInfoAPIView(APIView):
                 "max_price": products.aggregate(max_price=Max("price"))["max_price"],
             }
         )
+        return Response(serializer.data)
+
+
+# Viewsets
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.prefetch_related("items__product")
+    serializer_class = OrderSerializer
+    permission_classes = [AllowAny]
+    pagination_class = None
+    filterset_class = OrderFilter
+    filter_backends = [DjangoFilterBackend]
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if not self.request.user.is_staff:
+            qs = qs.filter(user = self.request.user)
+        return qs
+
+    @action(
+        detail=False, 
+        methods=['get'], 
+        url_path='user-orders',
+        permission_classes=[IsAuthenticated]
+    )
+    def user_orders(self, request):
+        orders = self.get_queryset().filter(user=request.user)
+        serializer = self.get_serializer(orders, many=True)
         return Response(serializer.data)
