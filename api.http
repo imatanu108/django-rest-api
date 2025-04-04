@@ -29,7 +29,7 @@ POST http://localhost:8000/api/token/ HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "atanu",
+    "username": "admin",
     "password": "radhamadhav"
 }
 
@@ -42,14 +42,35 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 ###
 POST http://localhost:8000/api/orders/ HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzYyNDY4LCJpYXQiOjE3NDM3NjIxNjgsImp0aSI6IjNjOTRiYTc0YjIyZjRlNmU4Mzg1ZDQ0MjVhMjQ3Y2MxIiwidXNlcl9pZCI6Mn0.6sLKQYK-vwN_6lC4GQjdkeu5zHM38unN2btT3c459Qo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzc3NDM0LCJpYXQiOjE3NDM3NzcxMzQsImp0aSI6IjgyYTczZjM3YjY5OTRhNmM4YTQ3ODllNGI3YmNjNTNjIiwidXNlcl9pZCI6MX0.8F0bOr-kebghEbm5NyCEni-fzrVbjFJWorCUJwsCuXw
 
 {
     "status": "Pending",
     "items": [
         {
-            "product": 2,
+            "product": 4,
             "quantity": 1
+        },
+        {
+            "product": 3,
+            "quantity": 2
+        }
+    ]
+}
+
+
+###
+
+PUT http://localhost:8000/api/orders/598dd455-c752-45e4-a01e-f8ad7d671a06/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzc3NDM0LCJpYXQiOjE3NDM3NzcxMzQsImp0aSI6IjgyYTczZjM3YjY5OTRhNmM4YTQ3ODllNGI3YmNjNTNjIiwidXNlcl9pZCI6MX0.8F0bOr-kebghEbm5NyCEni-fzrVbjFJWorCUJwsCuXw
+
+{
+    "status": "Confirmed",
+    "items": [
+        {
+            "product": 5,
+            "quantity": 6
         },
         {
             "product": 3,

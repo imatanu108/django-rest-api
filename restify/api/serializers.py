@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Product, Order, OrderItem
-
+from django.db import transaction
 
 # serializer to get product details
 class ProductSerializer(serializers.ModelSerializer):
@@ -71,14 +71,30 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             fields = ('product', 'quantity')
 
     order_id = serializers.UUIDField(read_only = True)
-    items = OrderItemCreateSerializer(many=True)
+    items = OrderItemCreateSerializer(many=True, required=False)
+
+    def update(self, instance, validated_data):
+        orderitem_data = validated_data.pop('items', None)
+        instance = super().update(instance, validated_data)
+
+        with transaction.atomic():
+            if orderitem_data is not None:
+                # clearing existing data(optional)
+                instance.items.all().delete()
+
+                # recreating items with updated data
+                for item in orderitem_data:
+                    OrderItem.objects.create(order=instance, **item)
+
+        return instance
 
     def create(self, validated_data):
         orderitem_data = validated_data.pop('items')
         order = Order.objects.create(**validated_data)
-        
-        for item in orderitem_data:
-            OrderItem.objects.create(order=order, **item)
+
+        with transaction.atomic():
+            for item in orderitem_data:
+                OrderItem.objects.create(order=order, **item)
 
         return order
 
