@@ -37,3 +37,23 @@ Content-Type: application/json
 ###
 GET http://localhost:8000/api/user-orders/ HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNTc1ODE4LCJpYXQiOjE3NDM1NzU1MTgsImp0aSI6IjRhYmFlNTlkMTBiOTQyZTM4OTE3MjQ4MWE4NmRiYmJlIiwidXNlcl9pZCI6Mn0.c9ahTObao5uOiNBrzRQCkX9d8rSshcHcsDDMtVNrc3g
+
+
+###
+POST http://localhost:8000/api/orders/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzYyNDY4LCJpYXQiOjE3NDM3NjIxNjgsImp0aSI6IjNjOTRiYTc0YjIyZjRlNmU4Mzg1ZDQ0MjVhMjQ3Y2MxIiwidXNlcl9pZCI6Mn0.6sLKQYK-vwN_6lC4GQjdkeu5zHM38unN2btT3c459Qo
+
+{
+    "status": "Pending",
+    "items": [
+        {
+            "product": 2,
+            "quantity": 1
+        },
+        {
+            "product": 3,
+            "quantity": 2
+        }
+    ]
+}
