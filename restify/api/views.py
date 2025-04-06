@@ -1,30 +1,31 @@
-from django.http import JsonResponse
 from django.db.models import Max
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, generics, mixins, viewsets
+from rest_framework.decorators import action, api_view
+from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .filters import InStockFilterBackend, OrderFilter, ProductFilter
+from .models import Order, OrderItem, Product
 from .serializers import (
+    OrderCreateSerializer,
+    OrderSerializer,
+    ProductCreateSerializer,
     ProductInfoSerializer,
     ProductSerializer,
-    ProductCreateSerializer,
-    OrderSerializer,
-    OrderItemSerializer,
-    OrderCreateSerializer
 )
-from .models import Product, Order, OrderItem
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, action
-from django.shortcuts import get_object_or_404
-from rest_framework import generics, mixins
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
-from rest_framework.views import APIView
-from .filters import ProductFilter, InStockFilterBackend, OrderFilter
-from rest_framework import filters, viewsets
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
+
 
 @api_view(["GET"])
 def product_list(request):
     products = Product.objects.all()
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
+
 
 # Generic view for the same task
 class ProductListAPIView(generics.ListAPIView):
@@ -49,8 +50,8 @@ class ProductCreateAPIView(generics.CreateAPIView):
     # docs: https://www.cdrf.co/
     def create(self, request, *args, **kwargs):
         print(request.data)
-        return super().create(request,  *args, **kwargs)
-    
+        return super().create(request, *args, **kwargs)
+
 
 # Generic view for the Listing and creating products (with custom permission)
 class ProductListCreateAPIView(generics.ListCreateAPIView):
@@ -59,26 +60,26 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     # filterset_fields = ('name', 'price')
     filterset_class = ProductFilter
     filter_backends = [
-        DjangoFilterBackend, 
+        DjangoFilterBackend,
         filters.SearchFilter,
         filters.OrderingFilter,
-        InStockFilterBackend
+        InStockFilterBackend,
     ]
-    search_fields = ['=name', 'description'],
+    search_fields = (["=name", "description"],)
     # =name, here name must be exact to get matched but not for the description, to do the same with name we must use only 'name' instead of =name
-    ordering_fields = ['name', 'price', 'stock']
+    ordering_fields = ["name", "price", "stock"]
     # pagination_class = LimitOffsetPagination
     pagination_class = PageNumberPagination
-    pagination_class.page_size = 4 #setting page size for a particular view
-    pagination_class.page_size_query_param = 'size'
-    pagination_class.max_page_size = 10 # limiting max page size
-
+    pagination_class.page_size = 4  # setting page size for a particular view
+    pagination_class.page_size_query_param = "size"
+    pagination_class.max_page_size = 10  # limiting max page size
 
     def get_permissions(self):
         self.permission_classes = [AllowAny]
-        if self.request.method == 'POST':
+        if self.request.method == "POST":
             self.permission_classes = [IsAdminUser]
         return super().get_permissions()
+
 
 @api_view(["GET"])
 def product_detail(request, pk):
@@ -98,11 +99,11 @@ def product_detail(request, pk):
 class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    lookup_url_kwarg = 'product_id'
+    lookup_url_kwarg = "product_id"
 
     def get_permissions(self):
         self.permission_classes = [AllowAny]
-        if self.request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:
+        if self.request.method in ["POST", "PUT", "PATCH", "DELETE"]:
             self.permission_classes = [IsAdminUser]
         return super().get_permissions()
 
@@ -135,11 +136,13 @@ class UserOrderListAPIView(generics.ListAPIView):
 @api_view(["GET"])
 def product_info(request):
     products = Product.objects.all()
-    serializer = ProductInfoSerializer({
+    serializer = ProductInfoSerializer(
+        {
             "products": products,
             "count": len(products),
             "max_price": products.aggregate(max_price=Max("price"))["max_price"],
-    })
+        }
+    )
 
     return Response(serializer.data)
 
@@ -172,21 +175,21 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         # we can also check with request.method == 'POST'
-        if self.action == 'create' or self.action == 'update':
+        if self.action == "create" or self.action == "update":
             return OrderCreateSerializer
         return super().get_serializer_class()
 
     def get_queryset(self):
         qs = super().get_queryset()
         if not self.request.user.is_staff:
-            qs = qs.filter(user = self.request.user)
+            qs = qs.filter(user=self.request.user)
         return qs
 
     @action(
-        detail=False, 
-        methods=['get'], 
-        url_path='user-orders',
-        permission_classes=[IsAuthenticated]
+        detail=False,
+        methods=["get"],
+        url_path="user-orders",
+        permission_classes=[IsAuthenticated],
     )
     def user_orders(self, request):
         orders = self.get_queryset().filter(user=request.user)

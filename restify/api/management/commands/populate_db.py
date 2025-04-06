@@ -3,7 +3,9 @@ from decimal import Decimal
 
 from django.core.management.base import BaseCommand
 from django.utils import lorem_ipsum
-from api.models import User, Product, Order, OrderItem
+
+from api.models import Order, OrderItem, Product, User
+
 
 class Command(BaseCommand):
     help = 'Creates application data'

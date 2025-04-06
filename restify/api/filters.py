@@ -1,6 +1,8 @@
 import django_filters
-from .models import Product, Order
 from rest_framework import filters
+
+from .models import Order, Product
+
 
 class ProductFilter(django_filters.FilterSet):
     class Meta:

@@ -1,7 +1,9 @@
 from django.test import TestCase
-from api.models import Order, User
 from django.urls import reverse
 from rest_framework import status
+
+from api.models import Order, User
+
 
 class UserOrderTestCase(TestCase):
     def setUp(self):

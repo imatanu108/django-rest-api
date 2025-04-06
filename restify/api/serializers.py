@@ -1,6 +1,8 @@
-from rest_framework import serializers
-from .models import Product, Order, OrderItem
 from django.db import transaction
+from rest_framework import serializers
+
+from .models import Order, OrderItem, Product
+
 
 # serializer to get product details
 class ProductSerializer(serializers.ModelSerializer):
